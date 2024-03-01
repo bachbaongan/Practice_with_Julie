@@ -54,4 +54,45 @@ ELSE ROUND(tweet_count*1.0,2) END AS rolling_avg_3d
 FROM subtweets;
 
 --- EX6:
+SELECT COUNT(*) AS payment_count
+FROM (
+SELECT *, 
+LEAD(transaction_timestamp) OVER(PARTITION BY merchant_id, credit_card_id, amount) AS next_trans,
+(LEAD(transaction_timestamp) OVER(PARTITION BY merchant_id, credit_card_id, amount))- transaction_timestamp as gap
+FROM transactions
+) AS subtable
+WHERE gap <= INTERVAL '10 minutes';
 
+--- EX7:
+WITH summary AS (
+SELECT *,
+DENSE_RANK() OVER(PARTITION BY category ORDER BY total_spend DESC, product) as ranking
+FROM(
+SELECT category, product,
+SUM(spend) as total_spend
+FROM product_spend
+WHERE EXTRACT(YEAR FROM transaction_date)='2022'
+GROUP BY category, product
+) as subtable
+)
+SELECT category, product, total_spend
+FROM summary
+WHERE ranking IN (1,2);
+
+--- EX8:
+WITH summary AS(
+SELECT *,
+DENSE_RANK() OVER(ORDER BY count DESC) AS artist_rank
+FROM (
+SELECT ar.artist_name,
+COUNT (s.song_id) as count
+FROM global_song_rank AS gl
+JOIN songs as s ON s.song_id=gl.song_id
+JOIN artists as ar ON ar.artist_id = s.artist_id
+WHERE rank<=10
+GROUP BY ar.artist_name
+ORDER BY count(s.song_id) DESC) AS subtable
+)
+SELECT artist_name, artist_rank
+FROM summary
+WHERE artist_rank<=5;
