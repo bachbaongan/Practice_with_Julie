@@ -60,4 +60,34 @@ GROUP BY tag, age
 --=> Có 154 khách hàng trẻ nhất ở độ tuổi 12 và 130 khách hàng lớn nhất ở độ tuổi 70 tham gia mua hàng và có đơn hàng hoàn thành trong khoảng thời gian từ 01/2019 đến 04/2022.
 
 /*Top 5 sản phẩm có lợi nhuận cao nhất từng tháng (xếp hạng cho từng sản phẩm)*/
+WITH CTE AS (
+SELECT month_year, product_id, count(id) as cnt
+FROM (
+SELECT id, FORMAT_DATE('%Y-%m',delivered_at) as month_year,
+product_id
+FROM bigquery-public-data.thelook_ecommerce.order_items 
+WHERE status ='Complete'
+ORDER BY month_year) as sub
+GROUP BY month_year, product_id
+ORDER BY month_year
+) 
+, sub2 as(
+SELECT cte.month_year, cte.product_id, p.name as product_name, 
+ROUND(p.retail_price *cte.cnt,2) as sales,
+ROUND(p.cost*cte.cnt,2) as cost,
+ROUND((p.retail_price *cte.cnt-p.cost*cte.cnt),2) as profit
+FROM CTE as cte 
+LEFT JOIN bigquery-public-data.thelook_ecommerce.products AS p ON p.id=cte.product_id
+ORDER BY cte.month_year
+)
+, sub3 AS (
+SELECT *,
+DENSE_RANK() OVER(PARTITION BY sub2.month_year oRDER BY sub2.profit DESC) AS rank_per_month
+FROM sub2
+ORDER BY sub2.month_year
+)
+SELECT * 
+FROM sub3
+WHERE rank_per_month <=5
 
+/*
