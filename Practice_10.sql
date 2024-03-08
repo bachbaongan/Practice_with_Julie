@@ -90,4 +90,17 @@ SELECT *
 FROM sub3
 WHERE rank_per_month <=5
 
-/*
+/*Tổng doanh thu theo ngày của từng danh mục sản phẩm (category) trong 3 tháng qua ( giả sử ngày hiện tại là 15/4/2022)*/
+WITH CTE AS (
+SELECT FORMAT_DATE('%Y-%m-%d',oi.delivered_at) as dates,oi.id, oi.product_id, oi.sale_price,p.category as product_categories
+FROM bigquery-public-data.thelook_ecommerce.order_items as oi
+LEFT JOIN bigquery-public-data.thelook_ecommerce.products as p ON oi.product_id=p.id
+WHERE status ='Complete'
+AND delivered_at BETWEEN '2022-01-15' and '2022-04-16'
+ORDER BY FORMAT_DATE('%Y-%m-%d',delivered_at)
+)
+SELECT dates, product_categories, 
+ROUND(SUM(sale_price),2) as revenue
+FROM CTE
+GROUP BY dates, CTE.product_categories
+ORDER BY dates
