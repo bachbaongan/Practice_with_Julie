@@ -1,10 +1,11 @@
+CREATE VIEW  my-project-010823-394620.thelook_ecommerce2.vw_ecommerce_analyst AS ( --Create view to do Cohort Analysis
 WITH sub1 AS (
 SELECT FORMAT_DATE('%Y-%m',o.delivered_at) as month_year,
 p.category as product_category,
 o.order_id,oi.id, oi.sale_price,o.num_of_item, p.cost
-FROM bigquery-public-data.thelook_ecommerce.orders AS o
-JOIN bigquery-public-data.thelook_ecommerce.order_items AS oi ON oi.order_id=o.order_id
-JOIN bigquery-public-data.thelook_ecommerce.products AS p ON oi.product_id=p.id
+FROM my-project-010823-394620.thelook_ecommerce2.orders AS o
+JOIN my-project-010823-394620.thelook_ecommerce2.order_items AS oi ON oi.order_id=o.order_id
+JOIN my-project-010823-394620.thelook_ecommerce2.products AS p ON oi.product_id=p.id
 WHERE o.status='Complete'
 ORDER BY month_year, p.category
 )
@@ -25,3 +26,4 @@ ROUND(TPV-TPO,2) as total_profit,
 ROUND((TPV-TPO)/sub2.total_cost,2) AS Profit_to_cost_ratio
 FROM sub2
 ORDER BY sub2.product_category, sub2.month_year
+)
