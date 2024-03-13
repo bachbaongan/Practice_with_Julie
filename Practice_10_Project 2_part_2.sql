@@ -1,4 +1,6 @@
-/*Create view followed dataset requirement*/
+/*Dataset (https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=thelook_ecommerce&page=dataset&project=my-project-010823-394620&ws=!1m4!1m3!3m2!1smy-project-010823-394620!2sthelook_ecommerce2)*/
+
+/*Create view following dataset requirement*/
 CREATE VIEW  my-project-010823-394620.thelook_ecommerce2.vw_ecommerce_analyst AS ( 
 WITH sub1 AS (
 SELECT FORMAT_DATE('%Y-%m',o.delivered_at) as month_year,
