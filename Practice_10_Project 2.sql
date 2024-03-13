@@ -1,3 +1,5 @@
+[Thelook Dataset](https://console.cloud.google.com/marketplace/product/bigquery-public-data/thelook-ecommerce?q=search&referrer=search&project=sincere-torch-350709)
+[Bigquery](https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=thelook_ecommerce&page=dataset&project=my-project-010823-394620&ws=!1m4!1m3!8m2!1s225578876761!2s2ca6c5a4ca1f4ebd94d7999ed2ac3bf1)
 /* 1. Số lượng người mua và số lượng đơn hàng đã hoàn thành mỗi tháng ( Từ 1/2019-4/2022) */
 SELECT 
 FORMAT_DATE('%Y-%m',delivered_at) as month_year,-- Convert Timestamp in Bigqueey
